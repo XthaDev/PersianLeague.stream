@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Persian League - Streaming Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #111;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e50914;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            color: #e50914;
+        }
+
+        .banner {
+            background-image: url('https://via.placeholder.com/1500x600'); /* Use an actual banner image here */
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner h1 {
+            color: white;
+            font-size: 50px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .categories {
+            padding: 20px;
+        }
+
+        .category {
+            margin-bottom: 30px;
+        }
+
+        .category h2 {
+            margin: 0;
+            padding-left: 10px;
+            font-size: 24px;
+        }
+
+        .movie-list {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding-left: 10px;
+            padding-top: 10px;
+        }
+
+        .movie-card {
+            width: 200px;
+            height: 300px;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .footer {
+            background-color: #111;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #999;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .footer a:hover {
+            color: #e50914;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #222;
+        }
+
+        .upload-section form input, .upload-section form button {
+            padding: 10px;
+            margin-top: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">Persian League</div>
+        <nav class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Browse</a>
+            <a href="#">My List</a>
+            <a href="#">Log In</a>
+        </nav>
+    </header>
+
+    <!-- Banner Section -->
+    <section class="banner">
+        <h1>Welcome to Persian League!</h1>
+    </section>
+
+    <!-- Upload Section (for admin or content creators) -->
+    <section class="upload-section">
+        <h2>Upload Movie/Show</h2>
+        <form id="uploadForm" method="POST" enctype="multipart/form-data">
+            <input type="file" name="mediaFile" required>
+            <input type="text" name="title" placeholder="Enter Title" required>
+            <textarea name="description" placeholder="Enter Description" required></textarea>
+            <button type="submit">Upload</button>
+        </form>
+    </section>
+
+    <!-- Movie Categories (Dynamic Loading) -->
+    <section class="categories">
+        <div class="category">
+            <h2>Featured Movies</h2>
+            <div id="movie-list" class="movie-list">
+                <!-- Dynamic content will go here -->
+            </div>
+        </div>
+
+        <div class="category">
+            <h2>Trending Shows</h2>
+            <div id="show-list" class="movie-list">
+                <!-- Dynamic content will go here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Persian League. All Rights Reserved.</p>
+        <div>
+            <a href="#">Privacy Policy</a> | <a href="#">Terms & Conditions</a> | <a href="#">Help</a>
+        </div>
+    </footer>
+
+    <script>
+        // Example of dynamic content loading via API
+        window.onload = function() {
+            fetchMovies();
+        };
+
+        // Fetch movies and shows from backend server (replace URL with your server's)
+        function fetchMovies() {
+            fetch('http://localhost:3000/api/movies')
+                .then(response => response.json())
+                .then(data => {
+                    const movieList = document.getElementById('movie-list');
+                    data.movies.forEach(movie => {
+                        const movieCard = document.createElement('div');
+                        movieCard.classList.add('movie-card');
+                        movieCard.innerHTML = `<img src="${movie.imageUrl}" alt="${movie.title}">`;
+                        movieList.appendChild(movieCard);
+                    });
+                })
+                .catch(error => console.error('Error fetching movies:', error));
+        }
+
+        // Handle form submission for uploading content
+        const uploadForm = document.getElementById('uploadForm');
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(uploadForm);
+            fetch('http://localhost:3000/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Upload successful!');
+                fetchMovies(); // Refresh the movie list after upload
+            })
+            .catch(error => console.error('Error uploading media:', error));
+        });
+    </script>
+
+</body>
+</html>
